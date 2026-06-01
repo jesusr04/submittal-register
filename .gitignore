@@ -1,0 +1,15 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.cache/
+output/
+
+# Real spec books and generated registers stay local — never commit client docs
+data/*.pdf
+*.xlsx
+
+# Internal planning / draft marketing copy — kept local, not shipped
+BRIEF.md
+SHOWCASE.md

@@ -1,0 +1,39 @@
+TABLE OF CONTENTS
+
+03 30 00  Cast-in-Place Concrete
+08 41 13  Aluminum-Framed Storefronts
+
+SECTION 03 30 00 — CAST-IN-PLACE CONCRETE
+
+PART 1 - GENERAL
+
+1.1 SUMMARY
+A. Section includes cast-in-place concrete for foundations and slabs.
+
+1.5 SUBMITTALS
+A. Product Data: For each type of product.
+B. Design Mixtures: For each concrete mixture.
+C. Shop Drawings: Reinforcement placement.
+
+1.6 DELIVERY, STORAGE, AND HANDLING
+A. Store cementitious materials off the ground, under cover, and protected
+   from moisture to prevent set. Reject any material exposed to weather.
+
+PART 2 - PRODUCTS
+2.1 CONCRETE MATERIALS
+A. Portland cement, aggregates, and reinforcing bars.
+
+SECTION 08 41 13 — ALUMINUM-FRAMED STOREFRONTS
+
+PART 1 - GENERAL
+
+1.5 SUBMITTALS
+A. Shop Drawings: Include elevations and anchorage.
+B. Samples: For each finish on aluminum framing.
+
+1.6 DELIVERY, STORAGE, AND HANDLING
+A. Store materials per manufacturer's written instructions.
+
+PART 2 - PRODUCTS
+2.1 MATERIALS
+A. Aluminum-framed storefront system with insulating glazing.

@@ -1,8 +1,9 @@
 """Stage 6 — Write Excel: the five-column register, ready to hand to a PM.
 
 Plain openpyxl. The columns match the build spec exactly. A little formatting
-goes a long way in a demo: bold frozen header, sensible widths, and Urgent rows
-tinted so the eye lands on the schedule risks first.
+goes a long way in a demo: bold frozen header, sensible widths, and the two
+highest priority levels (Urgent, High) tinted so the eye lands on the schedule
+risks first.
 """
 from dataclasses import dataclass
 
@@ -15,8 +16,16 @@ _WIDTHS = [34, 40, 40, 22, 14]
 
 _HEADER_FILL = PatternFill("solid", fgColor="1F2937")  # slate
 _HEADER_FONT = Font(bold=True, color="FFFFFF")
-_URGENT_FILL = PatternFill("solid", fgColor="FDE2E1")  # soft red
-_URGENT_FONT = Font(color="991B1B", bold=True)
+
+# Only the top two levels are tinted; Low/Medium stay plain so the risks pop.
+_ROW_FILL = {
+    "Urgent": PatternFill("solid", fgColor="FDE2E1"),  # soft red
+    "High": PatternFill("solid", fgColor="FEF3C7"),  # soft amber
+}
+_PRIORITY_FONT = {
+    "Urgent": Font(color="991B1B", bold=True),
+    "High": Font(color="92400E", bold=True),
+}
 
 
 @dataclass
@@ -48,10 +57,11 @@ def write_register(rows: list[Row], out_path: str) -> None:
             ws.cell(row=excel_row, column=col).alignment = Alignment(
                 vertical="top", wrap_text=True
             )
-        if r.priority == "Urgent":
+        fill = _ROW_FILL.get(r.priority)
+        if fill:
             for col in range(1, len(HEADERS) + 1):
-                ws.cell(row=excel_row, column=col).fill = _URGENT_FILL
-            ws.cell(row=excel_row, column=5).font = _URGENT_FONT
+                ws.cell(row=excel_row, column=col).fill = fill
+            ws.cell(row=excel_row, column=5).font = _PRIORITY_FONT[r.priority]
 
     ws.freeze_panes = "A2"
     ws.auto_filter.ref = f"A1:{get_column_letter(len(HEADERS))}{ws.max_row}"

@@ -19,6 +19,29 @@ from dataclasses import dataclass
 _NUMBER = r"\d{2}\s\d{2}\s\d{2}(?:\.\d{2})?"
 _HEADER_RE = re.compile(rf"(?m)^[ \t]*(?:SECTION\s+)?({_NUMBER})\b[ \t]*[-–—]?[ \t]*(.*)$")
 
+# MasterFormat uses a fixed set of division numbers (the leading pair). Real specs
+# bundle in appendices — geotech reports, sieve-analysis charts, data grids — whose
+# number rows ("55 60 65", "30 40 50") match the XX XX XX shape but live in
+# divisions that don't exist. Restricting the division to the real set drops that
+# false-positive noise without touching genuine sections.
+_VALID_DIVISIONS = frozenset(
+    {
+        "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
+        "10", "11", "12", "13", "14",
+        "21", "22", "23", "25", "26", "27", "28",
+        "31", "32", "33", "34", "35",
+        "40", "41", "42", "43", "44", "45", "46", "48",
+    }
+)
+
+# A real section carries a body — PART 1, a Submittals article, prose. Numbers that
+# appear only in the Table of Contents, or sections specified in another volume
+# (MEP is often issued separately), show up with almost nothing between headers.
+# There's nothing to extract, so we drop them rather than emit empty rows or pay an
+# API call to read whitespace. Genuine sections in real specs run 800+ chars; the
+# noise is well under 200, so the threshold sits comfortably between.
+_MIN_BODY_CHARS = 300
+
 
 @dataclass
 class Section:
@@ -57,6 +80,32 @@ def split_sections(text: str) -> list[Section]:
     # Preserve first-seen order of the kept sections.
     order = list(dict.fromkeys(s.number for s in found))
     return [best[n] for n in order]
+
+
+def is_spec_section(sec: Section) -> bool:
+    """True if a detected header is a real, extractable CSI section.
+
+    Filters the three kinds of junk a XX XX XX regex picks up in a real spec book:
+      - chart/table number rows in non-MasterFormat divisions ("55 60 65");
+      - TOC-only or other-volume sections with no body to extract;
+      - number runs in a valid division whose "title" is itself a number — e.g. a
+        sieve row "10 15 20  25" or submittal-numbering prose "10 16 00 — 4, etc."
+        A genuine section title is a product/work name and starts with a letter.
+    """
+    division = sec.number.split(" ", 1)[0]
+    return (
+        division in _VALID_DIVISIONS
+        and len(sec.text) >= _MIN_BODY_CHARS
+        and sec.title[:1].isalpha()
+    )
+
+
+def real_sections(text: str) -> list[Section]:
+    """`split_sections` filtered to genuine, extractable sections.
+
+    This is what the pipeline runs on — see `is_spec_section` for what's dropped.
+    """
+    return [s for s in split_sections(text) if is_spec_section(s)]
 
 
 def part1(section_text: str) -> str:

@@ -17,20 +17,28 @@ LEAD_TIME_TABLE: dict[str, tuple[str, int, int]] = {
     "concrete_rebar_aggregate": ("Stock", 0, 2),
     "rough_carpentry_lumber": ("Stock", 0, 2),
     "fasteners_accessories": ("Stock", 0, 2),
+    "curing_compound": ("Stock", 0, 2),
     "insulation": ("Stock", 1, 3),
+    # Electrical commodity — stocked at any supply house. (PE: tune these.)
+    "electrical_devices": ("Stock", 1, 3),  # receptacles, switches, plates, fuses
+    "conduit_raceway_boxes": ("Stock", 1, 3),  # conduit, raceway, boxes, supports, grounding, ID
     # --- Short (4-8 wk) ---
     "gypsum_drywall": ("Short", 4, 8),
     "paint_coatings": ("Short", 4, 8),
     "doors_frames_hardware": ("Short", 6, 8),
     "plumbing_fixtures": ("Short", 4, 8),
     "basic_lighting": ("Short", 6, 8),
+    "wire_cable": ("Short", 4, 8),  # building wire / branch-circuit conductors
+    "electrical_controls_metering": ("Short", 6, 10),  # lighting controls, contactors, sensors, meters, SPDs
     # --- Medium (10-16 wk) ---
     "structural_steel": ("Medium", 10, 16),
     "metal_deck_joists": ("Medium", 10, 14),
     "roofing_membrane": ("Medium", 10, 16),
     "millwork_casework": ("Medium", 12, 16),
     "fire_sprinkler": ("Medium", 10, 14),
+    "enclosed_switches_breakers": ("Medium", 10, 16),  # enclosed breakers/switches, motor controllers
     # --- Long (20-30 wk) ---
+    "panelboards": ("Long", 20, 28),
     "storefront_glazing": ("Long", 20, 28),
     "curtain_wall": ("Long", 24, 30),
     "elevators_escalators": ("Long", 22, 30),
@@ -48,6 +56,11 @@ LEAD_TIME_TABLE: dict[str, tuple[str, int, int]] = {
 
 # The valid choices the classifier is allowed to return.
 CATEGORIES = list(LEAD_TIME_TABLE.keys())
+
+# Prep/plan-based submittals (a curing method, a hot/cold-weather plan) carry no
+# procurement lead time, so they bypass the table above and show as "Plan" in the
+# Lead Time Category column. The extractor flags these; see priority.py for level.
+PLAN_LABEL = "Plan"
 
 
 def bucket_for(category: str) -> tuple[str, int, int]:

@@ -1,22 +1,32 @@
 """Stage 5 — Assign priority: the one derived column.
 
-Rule from the build spec: an item is URGENT if it is long-lead OR storage-
-sensitive; otherwise STANDARD. 'Long-lead' means it lands in the Long or
-Extra-Long bucket — those are the items that, if you don't order them in the
-first weeks of a project, will sit on your critical path. Storage-sensitive items
-are urgent for a different reason: even if the lead time is short, you must plan
-where they go the moment they arrive.
+Priority is a pure function of the lead-time category, so identical inputs always
+produce the same flag (a demo must reproduce). The longer the procurement lead
+time, the higher the schedule risk if you don't order early — so Long/Extra-Long
+items are Urgent. Prep/plan-based submittals carry no procurement lead time but
+still gate work, so they sit at Medium.
+
+The week numbers behind each bucket live in `lead_times.py`; this file owns only
+the bucket -> level mapping. Edit it if your firm weighs the levels differently.
 """
-from src.lead_times import bucket_for
+from src.lead_times import PLAN_LABEL
 
-# The buckets that count as "long lead" for the Urgent rule. Edit if your firm
-# treats Medium as urgent too.
-LONG_LEAD_BUCKETS = {"Long", "Extra-Long"}
+# Lead-time bucket label (or the 'Plan' pseudo-bucket) -> priority level.
+_PRIORITY_BY_BUCKET = {
+    "Stock": "Low",
+    PLAN_LABEL: "Medium",
+    "Short": "Medium",
+    "Medium": "High",
+    "Long": "Urgent",
+    "Extra-Long": "Urgent",
+}
+
+PRIORITY_LEVELS = ("Low", "Medium", "High", "Urgent")
 
 
-def priority_flag(category: str, storage_sensitive: bool) -> str:
-    """'Urgent' or 'Standard' for one item."""
-    bucket = bucket_for(category)[0]
-    if bucket in LONG_LEAD_BUCKETS or storage_sensitive:
-        return "Urgent"
-    return "Standard"
+def priority_flag(bucket: str) -> str:
+    """Map a lead-time bucket label (or 'Plan') to a priority level.
+
+    Unknown buckets fall back to High so they surface for human review.
+    """
+    return _PRIORITY_BY_BUCKET.get(bucket, "High")

@@ -33,7 +33,10 @@ spending on extraction. `--no-cache` forces a rebuild.
 4. `src/classify.py` — Claude (`CLASSIFY_MODEL`, cheap) maps each item to a
    material category from a fixed enum. One batched call per section.
    `src/lead_times.py` maps category → bucket + week range.
-5. `src/priority.py` — Urgent if Long/Extra-Long bucket OR storage-sensitive.
+5. `src/priority.py` — priority is a pure function of the lead-time bucket:
+   Stock→Low, Plan/Short→Medium, Medium→High, Long/Extra-Long→Urgent. Plan-based
+   submittals (a curing method, a weather plan) are flagged in `extract.py` and
+   shown as the `Plan` lead-time category.
 6. `src/excel.py` — openpyxl writes the five-column register.
 
 `src/llm.py` holds the shared lazy Anthropic client + `structured()` helper

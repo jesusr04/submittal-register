@@ -16,7 +16,7 @@ from src import lead_times
 from src.classify import classify_items
 from src.excel import Row, write_register
 from src.extract import extract_items
-from src.lead_times import cell_text
+from src.lead_times import PLAN_LABEL, bucket_for, cell_text
 from src.parse import load_text
 from src.priority import priority_flag
 from src.sections import Section, part1, real_sections
@@ -33,20 +33,29 @@ def _fingerprint(pdf_path: str) -> str:
 
 
 def _rows_from_section(sec: Section) -> list[Row]:
-    """The two LLM calls for one section, turned into register rows."""
+    """The two LLM calls for one section, turned into register rows.
+
+    Plan-based submittals carry no procurement lead time, so they skip the
+    classifier (the cheap call) and go straight to the 'Plan' category.
+    """
     items = extract_items(sec.label, part1(sec.text))
     if not items:
         return []
-    categories = classify_items([it.item for it in items])
+    material_categories = iter(classify_items([it.item for it in items if not it.plan_based]))
     rows = []
-    for it, category in zip(items, categories):
+    for it in items:
+        if it.plan_based:
+            lead_cell, bucket = PLAN_LABEL, PLAN_LABEL
+        else:
+            category = next(material_categories)
+            lead_cell, bucket = cell_text(category), bucket_for(category)[0]
         rows.append(
             Row(
                 spec_section=sec.label,
                 item=it.item,
                 submittal_required=it.submittal_required,
-                lead_time_category=cell_text(category),
-                priority=priority_flag(category, it.storage_sensitive),
+                lead_time_category=lead_cell,
+                priority=priority_flag(bucket),
             )
         )
     return rows

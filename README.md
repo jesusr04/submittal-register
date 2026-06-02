@@ -23,10 +23,10 @@ Output: an `.xlsx` with five columns —
 | **Spec Section** | CSI MasterFormat number + title (e.g. `03 30 00 — Cast-in-Place Concrete`) |
 | **Item** | The product/material requiring a submittal |
 | **Submittal Required** | What's due — product data, shop drawings, samples, certs… (from the Submittals article, ~1.5) |
-| **Lead Time Category** | `Stock` / `Short (4-8 wk)` / `Medium (10-16 wk)` / `Long (20-30 wk)` / `Extra-Long (30+ wk)` |
-| **Priority Flag** | `Urgent` if long-lead **or** storage-sensitive (from Delivery/Storage, ~1.6); else `Standard` |
+| **Lead Time Category** | `Stock` / `Short (4-8 wk)` / `Medium (10-16 wk)` / `Long (20-30 wk)` / `Extra-Long (30+ wk)`, or `Plan` for prep/plan-based submittals (a curing method, a weather plan) |
+| **Priority Flag** | Driven by lead time: `Stock`→`Low`, `Plan`/`Short`→`Medium`, `Medium`→`High`, `Long`/`Extra-Long`→`Urgent` |
 
-Urgent rows are tinted so the schedule risks jump out.
+Urgent and High rows are tinted so the schedule risks jump out.
 
 ## How it works
 
@@ -38,7 +38,7 @@ Six stages, one section at a time:
 3. extract    PART 1 -> submittal items (JSON)   (Claude, strong model)
 4. classify   item  -> material category         (Claude, cheap model)
               category -> lead-time bucket        (your lookup table)
-5. priority   bucket + storage -> Urgent/Standard (rule)
+5. priority   lead-time bucket -> Low/Medium/High/Urgent (rule)
 6. excel      rows  -> .xlsx                      (openpyxl)
 ```
 

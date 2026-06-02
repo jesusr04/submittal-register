@@ -17,6 +17,7 @@ LEAD_TIME_TABLE: dict[str, tuple[str, int, int]] = {
     "concrete_rebar_aggregate": ("Stock", 0, 2),
     "rough_carpentry_lumber": ("Stock", 0, 2),
     "fasteners_accessories": ("Stock", 0, 2),
+    "curing_compound": ("Stock", 0, 2),
     "insulation": ("Stock", 1, 3),
     # --- Short (4-8 wk) ---
     "gypsum_drywall": ("Short", 4, 8),
@@ -48,6 +49,11 @@ LEAD_TIME_TABLE: dict[str, tuple[str, int, int]] = {
 
 # The valid choices the classifier is allowed to return.
 CATEGORIES = list(LEAD_TIME_TABLE.keys())
+
+# Prep/plan-based submittals (a curing method, a hot/cold-weather plan) carry no
+# procurement lead time, so they bypass the table above and show as "Plan" in the
+# Lead Time Category column. The extractor flags these; see priority.py for level.
+PLAN_LABEL = "Plan"
 
 
 def bucket_for(category: str) -> tuple[str, int, int]:

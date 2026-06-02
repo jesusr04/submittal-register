@@ -28,11 +28,16 @@ def main() -> int:
 
     # Import after arg parsing so --help and --list-sections don't require a key.
     from src.parse import load_text
-    from src.sections import split_sections
+    from src.sections import is_spec_section, split_sections
 
     if args.list_sections:
-        sections = split_sections(load_text(args.pdf))
-        print(f"Detected {len(sections)} CSI sections:\n")
+        detected = split_sections(load_text(args.pdf))
+        sections = [s for s in detected if is_spec_section(s)]
+        skipped = len(detected) - len(sections)
+        print(
+            f"Detected {len(sections)} CSI sections "
+            f"({skipped} skipped — no body, or a non-MasterFormat division):\n"
+        )
         for s in sections:
             print(f"  {s.label}  ({len(s.text):,} chars)")
         return 0

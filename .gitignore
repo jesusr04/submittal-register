@@ -13,3 +13,4 @@ data/*.pdf
 # Internal planning / draft marketing copy — kept local, not shipped
 BRIEF.md
 SHOWCASE.md
+TESTING-LOG.md

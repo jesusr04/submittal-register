@@ -19,7 +19,7 @@ from src.extract import extract_items
 from src.lead_times import cell_text
 from src.parse import load_text
 from src.priority import priority_flag
-from src.sections import Section, part1, split_sections
+from src.sections import Section, part1, real_sections
 
 
 def _fingerprint(pdf_path: str) -> str:
@@ -66,7 +66,7 @@ def build_register(
     smoke test before paying to run the whole book. `on_section(i, total, sec)`
     is an optional progress callback.
     """
-    sections = split_sections(load_text(pdf_path))
+    sections = real_sections(load_text(pdf_path))
     if max_sections is not None:
         sections = sections[:max_sections]
 

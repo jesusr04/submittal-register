@@ -57,23 +57,31 @@ def build_register(
     out_path: str,
     *,
     max_sections: int | None = None,
+    only: str | None = None,
     use_cache: bool = True,
     on_section=None,
 ) -> list[Row]:
     """Run the full pipeline and write the .xlsx. Returns the rows written.
 
     `max_sections` caps how many sections are processed — use it for a cheap
-    smoke test before paying to run the whole book. `on_section(i, total, sec)`
-    is an optional progress callback.
+    smoke test before paying to run the whole book. `only` restricts the run to
+    sections whose number starts with that key (a full number like "033000" or a
+    division prefix like "03"), for cheap targeted testing. `on_section(i, total,
+    sec)` is an optional progress callback.
     """
     sections = real_sections(load_text(pdf_path))
+    if only is not None:
+        sections = [s for s in sections if s.number.replace(" ", "").startswith(only)]
     if max_sections is not None:
         sections = sections[:max_sections]
 
+    # A capped or targeted run is a partial view, so it neither reads nor writes
+    # the full-book cache.
+    full_run = max_sections is None and only is None
+
     cache_path = os.path.join(CACHE_DIR, f"{_fingerprint(pdf_path)}.json")
     cached: dict[str, list[dict]] = {}
-    # Cache only covers full runs — a capped run shouldn't poison the full cache.
-    if use_cache and max_sections is None and os.path.exists(cache_path):
+    if use_cache and full_run and os.path.exists(cache_path):
         with open(cache_path, encoding="utf-8") as f:
             cached = json.load(f)
 
@@ -89,7 +97,7 @@ def build_register(
         fresh[sec.number] = [r.__dict__ for r in rows]
         all_rows.extend(rows)
 
-    if use_cache and max_sections is None:
+    if use_cache and full_run:
         os.makedirs(CACHE_DIR, exist_ok=True)
         with open(cache_path, "w", encoding="utf-8") as f:
             json.dump(fresh, f, indent=2)

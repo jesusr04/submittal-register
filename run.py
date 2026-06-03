@@ -16,6 +16,14 @@ import sys
 
 
 def main() -> int:
+    # CSI section labels use an em-dash; force UTF-8 so a Windows console (default
+    # code page) prints it cleanly instead of mojibake.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
+
     p = argparse.ArgumentParser(description="Generate a submittal register from a spec PDF.")
     p.add_argument("pdf", help="Path to the construction spec PDF.")
     p.add_argument("-o", "--output", help="Output .xlsx path (default: output/<pdf name>.xlsx).")

@@ -22,6 +22,8 @@ LEAD_TIME_TABLE: dict[str, tuple[str, int, int]] = {
     # Electrical commodity — stocked at any supply house. (PE: tune these.)
     "electrical_devices": ("Stock", 1, 3),  # receptacles, switches, plates, fuses
     "conduit_raceway_boxes": ("Stock", 1, 3),  # conduit, raceway, boxes, supports, grounding, ID
+    # HVAC commodity — accessories carried/quick. (PE: tune these.)
+    "hvac_accessories": ("Stock", 1, 3),  # access doors, vibration isolators, hangers, grilles/diffusers/registers
     # --- Short (4-8 wk) ---
     "gypsum_drywall": ("Short", 4, 8),
     "paint_coatings": ("Short", 4, 8),
@@ -30,6 +32,8 @@ LEAD_TIME_TABLE: dict[str, tuple[str, int, int]] = {
     "basic_lighting": ("Short", 6, 8),
     "wire_cable": ("Short", 4, 8),  # building wire / branch-circuit conductors
     "electrical_controls_metering": ("Short", 6, 10),  # lighting controls, contactors, sensors, meters, SPDs
+    "hvac_ductwork": ("Short", 4, 8),  # ducts, dampers, louvers, flues, duct lining, sealant, insulation
+    "hvac_piping": ("Short", 4, 8),  # HVAC/refrigerant piping, fittings, valves
     # --- Medium (10-16 wk) ---
     "structural_steel": ("Medium", 10, 16),
     "metal_deck_joists": ("Medium", 10, 14),
@@ -37,12 +41,13 @@ LEAD_TIME_TABLE: dict[str, tuple[str, int, int]] = {
     "millwork_casework": ("Medium", 12, 16),
     "fire_sprinkler": ("Medium", 10, 14),
     "enclosed_switches_breakers": ("Medium", 10, 16),  # enclosed breakers/switches, motor controllers
+    "hvac_terminal_units": ("Medium", 12, 18),  # fans, fan coil units, unit heaters, pumps (smaller/quicker gear)
     # --- Long (20-30 wk) ---
     "panelboards": ("Long", 20, 28),
     "storefront_glazing": ("Long", 20, 28),
     "curtain_wall": ("Long", 24, 30),
     "elevators_escalators": ("Long", 22, 30),
-    "hvac_air_handling": ("Long", 20, 30),
+    "hvac_packaged_equipment": ("Long", 20, 30),  # packaged DX/RTU/AHU, heat pumps, condensing units, ERVs
     "overhead_coiling_doors": ("Long", 20, 26),
     # --- Extra-Long (30+ wk): the schedule killers ---
     "electrical_switchgear": ("Extra-Long", 30, 52),
